@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Edit Agency</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A complete admin panel theme">
+
+    <!-- styles -->
+
+    <link href="css/utopia-white.css" rel="stylesheet">
+    <link href="css/utopia-responsive.css" rel="stylesheet">
+    <style type="text/css">
+
+        #newCategoryInputCollection td {
+            padding-left: 7px;
+            padding-right: 7px;
+        }
+
+        #customers td {
+            vertical-align: middle !important;
+        }
+
+        .activeCustomers label {
+            margin: 0;
+        }
+
+        .activeCustomers td {
+            padding: 3px;
+        }
+
+        .activeCustomers {
+            padding-left: 15px;
+        }
+
+        #addCustomer td {
+            padding-left: 7px;
+            padding-right: 7px;
+            width: 200px;
+        }
+
+        .generateRandomPass td:first-child {
+            width: 10px !important;
+            vertical-align: top;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+
+        .generateRandomPass td label {
+            margin: 0;
+            padding-top: 1px;
+        }
+
+        .error {
+            color: red;
+        }
+
+        .productDetails td {
+            padding-left: 7px;
+            padding-right: 7px;
+            width: 200px;
+        }
+
+        .colorDetails td {
+            padding-left: 7px;
+            padding-right: 7px;
+        }
+
+        .error {
+            color: red;
+        }
+
+        #users td {
+            vertical-align: middle !important;
+        }
+
+        #productsThumb ul {
+            list-style: none;
+            display: block;
+            margin: 0;
+            padding: 0;
+        }
+
+        #productsThumb ul li {
+            float: left;
+            padding: 4px;
+            margin-right: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+        }
+
+        #productsThumb ul li .libImage {
+            border: 5px solid white;
+            display: block;
+            box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.25);
+            -moz-box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.25);
+            -webkit-box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.25);
+        }
+
+        #productsThumb ul li a.removeImage {
+            margin-left: 167px;
+            margin-top: -6px;
+            position: absolute;
+            text-decoration: none;
+        }
+
+        #productsThumb ul li a.removeImage img {
+            border: none;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container-fluid">
+    <!-- Header starts -->
+<div class="row-fluid">
+    <div class="span12">
+        <div class="header-top">
+            <div class="header-wrapper">
+                <a href="" class="utopia-logo">
+                    <!-- Logo -->
+                </a>
+
+                <div class="header-right">
+
+                    <div class="header-divider">&nbsp;</div>
+
+                    <div class="search-panel header-divider">
+                        <div class="search-box">
+                            <input type="text" name="search" style="width: 270px;" placeholder="Search"/>
+                        </div>
+                    </div>
+
+                    <div class="header-divider">
+                        <button class="btn">Logout</button>
+                    </div>
+                    <!-- User panel end -->
+                </div>
+                <!-- End header right -->
+            </div>
+            <!-- End header wrapper -->
+        </div>
+        <!-- End header -->
+    </div>
+</div>
+<!-- Header ends -->
+
+
+<div class="row-fluid">        
+<!-- Sidebar start -->
+<div class="span2 sidebar-container">
+    <div class="sidebar">
+        <div class="nav-collapse collapse leftmenu">
+            <ul>
+                <li>
+                    <a class="dashboard smronju" href="http://uniformlocal.org/admin/dashboard.php" title="Dashboard">
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li >
+                    <a class="list" href="javascript:void(0)" title="Users">
+                        <span>Test Menu</span>
+                    </a>
+                </li>
+                <li >
+                    <a class="list" href="javascript:void(0)" title="Users">
+                        <span>Test Menu</span>
+                    </a>
+                </li>
+                <li >
+                    <a class="list" href="javascript:void(0)" title="Users">
+                        <span>Test Menu</span>
+                    </a>
+                </li>
+                <li >
+                    <a class="list" href="javascript:void(0)" title="Users">
+                        <span>Test Menu</span>
+                    </a>
+                </li>
+                <li >
+                    <a class="list" href="javascript:void(0)" title="Users">
+                        <span>Test Menu</span>
+                    </a>
+                </li>
+                <li >
+                    <a class="list" href="javascript:void(0)" title="Users">
+                        <span>Test Menu</span>
+                    </a>
+                </li>
+                <li >
+                    <a class="list" href="javascript:void(0)" title="Users">
+                        <span>Test Menu</span>
+                    </a>
+                </li>
+            </ul>
+
+        </div>
+
+    </div>
+</div>
+<!-- Sidebar end -->
+        <!-- Body start -->
+        <div class="span10 body-container">
+            <div class="row-fluid">
+                <div class="span12">
+                    <div class="row-fluid">
+                        <div class="span12">
+                            <div style="padding-bottom:15px;">
+                                <h3>API KEY - 52efbe8a64cdc155582f7181</h3>
+                                <span>Created at: Jul 11, 2013 3:52 PM</span>
+                            </div>
+                            <table>
+                                <tr>
+                                    <td style="padding-bottom:15px; padding-top:15px;">
+                                        <a href="#" style="border:1px solid #ccc; padding:10px; background-color:#ddd;">
+                                            Websites 23 (Add new)
+                                        </a>
+                                    </td>
+                                    <td style="padding-bottom:15px; padding-top:15px;">
+                                        <a href="#" style="border:1px solid #ccc; padding:10px; background-color:#ddd;">
+                                            Agents 41 (Add new)
+                                        </a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div style="display:inline;">
+                                            <div class="renderWithName">
+                                                <div class="left">
+                                                    <label>Agency Name<b style="color:red;">*</b></label>
+                                                </div>
+                                            <div class="right">
+                                                <input type="text" value="RT Software Group" class="textbox">
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td style="padding-left:40px;">
+                                        <div style="display:inline;">
+                                            <div class="renderWithName">
+                                                <div class="left">
+                                                    <label>Broker ID<b style="color:red;">*</b></label>
+                                                </div>
+                                            <div class="right">
+                                                <input type="text" value="243225N" class="textbox">
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div style="display:inline;">
+                                            <div class="renderWithName">
+                                                <div class="left">
+                                                    <label>Admin Email<b style="color:red;">*</b></label>
+                                                </div>
+                                            <div class="right">
+                                                <input type="text" value="eriol@rtsoftwaregroup.io" class="textbox">
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td style="padding-left:40px;">
+                                        <div style="display:inline;">
+                                            <div class="renderWithName">
+                                                <div class="left">
+                                                    <label>Admin Phone<b style="color:red;">*</b></label>
+                                                </div>
+                                            <div class="right">
+                                                <input type="text" value="(345) 345-2345" class="textbox">
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">
+                                        <div style="display:inline;">
+                                            <div class="renderWithName">
+                                                <div class="left">
+                                                    <label>(multiple selects) Permitted boards<b style="color:red;">*</b></label>
+                                                </div>
+                                            <div class="right">
+                                                <select multiple style="width:480px;height:180px">
+                                                    <option selected="selected" value="board1">BOARD-1</option>
+                                                    <option selected="selected" value="board2">BOARD-2</option>
+                                                    <option value="board3">BOARD-3</option>
+                                                    <option selected="selected" value="board4">BOARD-4</option>
+                                                    <option value="board5">BOARD-5</option>
+                                                    <option value="board6">BOARD-6</option>
+                                                    <option value="board7">BOARD-7</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="left">
+                                        <div class="btn-group">
+                                            <a href="javascript:;" class="btn btn-danger">
+                                                Delete Agency
+                                            </a>
+                                            <button class="btn">
+                                                Update Agency
+                                            </button>
+                                        </div>
+                                    </td>
+                                    <td>
+                                    </td>
+                                </tr>
+                            </table>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
