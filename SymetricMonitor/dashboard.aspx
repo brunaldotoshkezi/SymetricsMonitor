@@ -424,7 +424,7 @@
     </div>
 
  <div class="navbar navbar-inner  navbar-fixed-bottom">
-    <p class="muted credit" align="center"> Copyright &nbsp; <a href="http://ideal.al"  style="margin-left:-5px" >Ideal Solution</a></p>
+    <p class="muted credit" align="center"> Copyright &nbsp;brunaldotoshkezi</p>
  </div>
     </form>
     
