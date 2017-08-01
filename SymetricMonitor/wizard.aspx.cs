@@ -21,6 +21,7 @@ namespace SymetricMonitor
             if (!IsPostBack)
             {
                 string strip = ""; string con = "";
+                //path of config file server database
                 string propertiesfilename = @"..\..\sym-corp\symmetric-3.5.19\engines\corp-000.properties";
 
                 string[] full_file = System.IO.File.ReadAllLines(propertiesfilename);
@@ -70,6 +71,7 @@ namespace SymetricMonitor
                 Session["cons"] = connserver;
                 string con2 = "";
                 string strip2 = "";
+                //path of config file backup server database
                 string propertiesfilename2 = @"..\..\sym-store001\symmetric-3.5.19\engines\store-001.properties";
 
                 string[] full_file2 = System.IO.File.ReadAllLines(propertiesfilename2);
@@ -189,7 +191,7 @@ namespace SymetricMonitor
            
             
         }
-
+        //show properties of server database
         private void populatedbserver()
         {
             string propertiesfilename = @"..\..\sym-corp\symmetric-3.5.19\engines\corp-000.properties";
@@ -216,6 +218,7 @@ namespace SymetricMonitor
             }
         
         }
+        //show properties of server backup database
         private void populatedbclient()
         {
             string propertiesfilename = @"..\..\sym-store001\symmetric-3.5.19\engines\store-001.properties";
@@ -572,47 +575,54 @@ namespace SymetricMonitor
             catch (NpgsqlException ae) { msglbl.Text = ae.ToString() + msglbl.Text; }
 
         }
-
+        //Insert data to database backup
         private DataTable AddDataToTableclient()
         {
             string con = (string)Session["conc"];
             DataTable dt = new DataTable();
             DataSet ds = new DataSet();
             NpgsqlConnection connn = new NpgsqlConnection(con);
-            connn.Open();
-            string sql = 
-               " select 'DROP TRIGGER IF EXISTS '||tgname||' ON '||tablename||';' as query from pg_trigger,pg_class,pg_tables where " +
-              " tgrelid=relfilenode and relname=tablename and schemaname='public' and tgname like '%sym%'  " +
-               "  union all " +
-               " SELECT 'DROP FUNCTION IF EXISTS '|| proname||'();' as query  " +
-               " FROM    pg_catalog.pg_namespace n " +
-               " JOIN    pg_catalog.pg_proc p " +
-               " ON      pronamespace = n.oid  " +
-               " WHERE   nspname = 'public' and proname like '%fsym%' " +
-               "  union all " +
-               "select   'DROP TABLE IF EXISTS '||tablename ||' CASCADE ;' as query from pg_tables where tablename like '%sym%' " +
-               "  union all " +
-               " SELECT 'DROP SEQUENCE IF EXISTS ' || quote_ident(c.relname) || ';' as query " +
-               " FROM   pg_class c  " +
-               " LEFT   JOIN pg_depend d ON d.refobjid = c.oid AND d.deptype <> 'i'  " +
-               " WHERE  c.relkind = 'S'  " +
-                "AND    c.relname like '%sym%'; ";
-            NpgsqlDataAdapter da = new NpgsqlDataAdapter(sql, connn);
+            try
+            {
+                connn.Open();
+                string sql =
+                   " select 'DROP TRIGGER IF EXISTS '||tgname||' ON '||tablename||';' as query from pg_trigger,pg_class,pg_tables where " +
+                  " tgrelid=relfilenode and relname=tablename and schemaname='public' and tgname like '%sym%'  " +
+                   "  union all " +
+                   " SELECT 'DROP FUNCTION IF EXISTS '|| proname||'();' as query  " +
+                   " FROM    pg_catalog.pg_namespace n " +
+                   " JOIN    pg_catalog.pg_proc p " +
+                   " ON      pronamespace = n.oid  " +
+                   " WHERE   nspname = 'public' and proname like '%fsym%' " +
+                   "  union all " +
+                   "select   'DROP TABLE IF EXISTS '||tablename ||' CASCADE ;' as query from pg_tables where tablename like '%sym%' " +
+                   "  union all " +
+                   " SELECT 'DROP SEQUENCE IF EXISTS ' || quote_ident(c.relname) || ';' as query " +
+                   " FROM   pg_class c  " +
+                   " LEFT   JOIN pg_depend d ON d.refobjid = c.oid AND d.deptype <> 'i'  " +
+                   " WHERE  c.relkind = 'S'  " +
+                    "AND    c.relname like '%sym%'; ";
+                NpgsqlDataAdapter da = new NpgsqlDataAdapter(sql, connn);
 
-            ds.Reset();
-            da.Fill(ds);
-            dt = ds.Tables[0];
-            connn.Close();
+                ds.Reset();
+                da.Fill(ds);
+                dt = ds.Tables[0];
+                connn.Close();
+            }catch(Exception ex)
+            {
+
+            }
             return dt;
            
         }
-
+        //Insert data to database 
         private DataTable AddDataToTable()
         {
             string con = (string)Session["cons"];
             DataTable dt = new DataTable();
             DataSet ds = new DataSet();
             NpgsqlConnection connn = new NpgsqlConnection(con);
+            try { 
             connn.Open();
             string sql =
               " select 'DROP TRIGGER IF EXISTS '||tgname||' ON '||tablename||';' as query from pg_trigger,pg_class,pg_tables where " +
@@ -637,6 +647,7 @@ namespace SymetricMonitor
             da.Fill(ds);
             dt = ds.Tables[0];
             connn.Close();
+            }catch(Exception ex) { }
             return dt;
            
         }

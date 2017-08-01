@@ -47,6 +47,8 @@ namespace SymetricMonitor
 
         //procceses in execution
         Process[] proceset = Process.GetProcessesByName("cmd");
+
+
         protected void Page_Load(object sender, EventArgs e)
         {
            
@@ -95,6 +97,8 @@ namespace SymetricMonitor
                 {
                     strip = st[0];
                 }
+
+
                 //connection string for first database in postgresql
                 connserver = "Server=" + strip + ";" +
                        "Database=openbravo;" +
@@ -136,7 +140,7 @@ namespace SymetricMonitor
                 Session["conc"] = connclient;
                 if (Session["UserName"].Equals(WebConfigurationManager.AppSettings["user_username"].ToString())) { lnkconfig.Visible = false; }
                 Bind();
-          }
+            }
           
             
             if (Session["Auth"] == null)
@@ -196,11 +200,14 @@ namespace SymetricMonitor
             
         }
 
+        //bind data between switched server
         private void Bind()
         {
             Switch.Items.Add("Server");
             Switch.Items.Add("Client");
         }
+
+
         private bool Exist()
         {
             bool b;
@@ -218,178 +225,194 @@ namespace SymetricMonitor
             DataTable dt = new DataTable();
             DataSet ds = new DataSet();
             NpgsqlConnection con = new NpgsqlConnection(conn);
-            con.Open();
-            string sql = "select count(tablename )nr"+
-                         " from pg_tables where tablename like '%sym%' ";
-            NpgsqlDataAdapter da = new NpgsqlDataAdapter(sql, con);
+            try
+            {
+                con.Open();
+                string sql = "select count(tablename )nr" +
+                             " from pg_tables where tablename like '%sym%' ";
+                NpgsqlDataAdapter da = new NpgsqlDataAdapter(sql, con);
 
-            ds.Reset();
-           
+                ds.Reset();
+
                 da.Fill(ds);
                 dt = ds.Tables[0];
-          
-            con.Close();
-            if (Convert.ToInt32(dt.Rows[0]["nr"])>0) { b = true; }else
-            { b = false; }
+
+                con.Close();
+            }catch(Exception ex) {
+
+            }
+
+            if (Convert.ToInt32(dt.Rows[0]["nr"])>0)
+                { b = true; }
+            else
+                { b = false; }
             return b; 
         }
 
+        //populate data on table of SymetrisDS 
         private DataTable populate()
         {
             string conn = "";
-            if(Switch.SelectedValue=="Server"){
-               string connn = (string)Session["cons"];
-               conn = connn;
+            if (Switch.SelectedValue == "Server") {
+                string connn = (string)Session["cons"];
+                conn = connn;
             }
             else
             {
                 string connn = (string)Session["conc"];
-                conn = connn; 
+                conn = connn;
             }
             DataTable dt = new DataTable();
             DataSet ds = new DataSet();
             NpgsqlConnection con = new NpgsqlConnection(conn);
-            con.Open();
-            //"select c_order.c_order_id as orderid ,c_order.ad_org_id  as org ,c_orderline.c_orderline_id as clorderid, c_orderline.ad_org_id  as orgl  FROM  c_order,  c_orderline WHERE  c_order.c_order_id = c_orderline.c_order_id limit 2;";
-            string sql = "  SELECT " +
-                 "(SELECT  COUNT(*) ernr "+
-                "FROM sym_incoming_batch, sym_incoming_error "+
-                "WHERE"+ 
-                  " sym_incoming_batch.batch_id = sym_incoming_error.batch_id and sym_incoming_batch.status='ER') as er,"+
-                "(SELECT "+
-                 " COUNT(*)oknr "+
-                "FROM  "+
-                   "public.sym_incoming_batch,"+ 
-                 " public.sym_incoming_error "+
-                "WHERE "+ 
-                  "sym_incoming_batch.batch_id = sym_incoming_error.batch_id and sym_incoming_batch.status='OK')as ok,"+
-                "(SELECT "+
-                  "COUNT(*)newnr "+
-                " FROM "+ 
-                  "public.sym_incoming_batch,"+ 
-                 " public.sym_incoming_error "+
-                "WHERE "+
-                  "sym_incoming_batch.batch_id = sym_incoming_error.batch_id and sym_incoming_batch.status='NE')as new,"+
-                "(SELECT "+
-                 " COUNT(*) ldnr "+
-                "FROM "+
-                 " public.sym_incoming_batch, "+
-                  "public.sym_incoming_error "+
-                "WHERE "+
-                  "sym_incoming_batch.batch_id = sym_incoming_error.batch_id and sym_incoming_batch.status='LD')as ld,"+
-                "(SELECT "+
-                 " COUNT(*) insertnr "+
-                "FROM "+
-                  "public.sym_incoming_batch,"+ 
-                 " public.sym_incoming_error "+
-                "WHERE " +
-                  "sym_incoming_batch.batch_id = sym_incoming_error.batch_id and sym_incoming_error.event_type='I' ) as insert,"+
-
-                "(SELECT "+
-                  "COUNT(*)uptnr "+
-                "FROM "+
-                  "public.sym_incoming_batch, "+
-                  "public.sym_incoming_error "+
-                "WHERE "+
-                  "sym_incoming_batch.batch_id = sym_incoming_error.batch_id and sym_incoming_error.event_type='U' ) as update,"+
-                "(SELECT "+
-                  "COUNT(*) deletenr "+
-                "FROM "+
-                 " public.sym_incoming_batch,"+ 
-                 " public.sym_incoming_error "+
-                "WHERE "+
-                  "sym_incoming_batch.batch_id = sym_incoming_error.batch_id and sym_incoming_error.event_type='D' ) as delete,"+
-                 " (SELECT "+
-                 " COUNT(*) reloadnr "+
-                "FROM "+
-                 " public.sym_incoming_batch,"+ 
-                  "public.sym_incoming_error "+
-                "WHERE "+
-                "  sym_incoming_batch.batch_id = sym_incoming_error.batch_id and sym_incoming_error.event_type='R' ) as reload"+
-                 " Union all"+
-                 " SELECT"+
-                " (SELECT "+
-                   "COUNT(*) ernr "+
-                "FROM "+  
-                 " public.sym_data, "+
-                 " public.sym_data_event, "+
-                "  public.sym_outgoing_batch "+
-                "WHERE "+
-                 " sym_data.data_id = sym_data_event.data_id AND "+
-                  "sym_data_event.batch_id = sym_outgoing_batch.batch_id  AND  sym_outgoing_batch.status='ER')as er,"+
-                " (SELECT"+ 
-                   " COUNT(*) oknr "+
-                    " FROM  "+
-                  "public.sym_data,"+ 
-                  "public.sym_data_event,"+ 
-                  "public.sym_outgoing_batch"+
-                " WHERE " +
-                 " sym_data.data_id = sym_data_event.data_id AND "+
-                 " sym_data_event.batch_id = sym_outgoing_batch.batch_id  AND  sym_outgoing_batch.status='OK')as ok,"+
-                " (SELECT " +
-                   "COUNT(*) newnr "+
-                "FROM "+
-                 " public.sym_data,"+ 
-                  "public.sym_data_event,"+ 
-                 " public.sym_outgoing_batch"+
-                " WHERE "+
-                 " sym_data.data_id = sym_data_event.data_id AND "+
-                 " sym_data_event.batch_id = sym_outgoing_batch.batch_id  AND  sym_outgoing_batch.status='NE')as new,"+
-                "(SELECT "+
-                   "COUNT(*) ldnr "+
-                "FROM "+
-                "  public.sym_data, "+
-                  "public.sym_data_event,"+ 
-                 " public.sym_outgoing_batch "+
-                "WHERE "+
-                  "sym_data.data_id = sym_data_event.data_id AND "+
-                 " sym_data_event.batch_id = sym_outgoing_batch.batch_id  AND  sym_outgoing_batch.status='LD')as ld,"+
-                "(SELECT "+
-                   "COUNT(*) insertnr "+
-                "FROM "+
-                 " public.sym_data," +
-                 " public.sym_data_event,"+ 
-                 " public.sym_outgoing_batch"+
-                 " WHERE "+
-                 " sym_data.data_id = sym_data_event.data_id AND "+
-                 " sym_data_event.batch_id = sym_outgoing_batch.batch_id  AND  sym_data.event_type='I')as insert,"+
-                "(SELECT "+
-                 "  COUNT(*) upnr "+
-                "FROM "+
-                 " public.sym_data, "+
-                 " public.sym_data_event, "+
-                  "public.sym_outgoing_batch "+
-                "WHERE "+
-                "  sym_data.data_id = sym_data_event.data_id AND "+
-                 " sym_data_event.batch_id = sym_outgoing_batch.batch_id  AND  sym_data.event_type='U')as update,"+
-                "(SELECT "+
-                  " COUNT(*) deletenr "+
-                "FROM "+
-                  "public.sym_data,"+ 
-                 " public.sym_data_event, "+
-                 " public.sym_outgoing_batch "+
-                "WHERE "+ 
-                  "sym_data.data_id = sym_data_event.data_id AND "+
-                 " sym_data_event.batch_id = sym_outgoing_batch.batch_id  AND  sym_data.event_type='D')as delete,"+
-                "(SELECT "+
-                  " COUNT(*) reloadnr "+
-                "FROM "+
-                  "public.sym_data,"+ 
-                  "public.sym_data_event,"+ 
-                  "public.sym_outgoing_batch "+
-                "WHERE "+
-                 " sym_data.data_id = sym_data_event.data_id AND "+
-                 " sym_data_event.batch_id = sym_outgoing_batch.batch_id  AND  sym_data.event_type='R')as reload;";
-
-            NpgsqlDataAdapter da = new NpgsqlDataAdapter(sql, con);
-
-            ds.Reset();
-            if (da != null)
+            try
             {
-                da.Fill(ds);
-                dt = ds.Tables[0];
+                con.Open();
+                //"select c_order.c_order_id as orderid ,c_order.ad_org_id  as org ,c_orderline.c_orderline_id as clorderid, c_orderline.ad_org_id  as orgl  FROM  c_order,  c_orderline WHERE  c_order.c_order_id = c_orderline.c_order_id limit 2;";
+                string sql = "  SELECT " +
+                     "(SELECT  COUNT(*) ernr " +
+                    "FROM sym_incoming_batch, sym_incoming_error " +
+                    "WHERE" +
+                      " sym_incoming_batch.batch_id = sym_incoming_error.batch_id and sym_incoming_batch.status='ER') as er," +
+                    "(SELECT " +
+                     " COUNT(*)oknr " +
+                    "FROM  " +
+                       "public.sym_incoming_batch," +
+                     " public.sym_incoming_error " +
+                    "WHERE " +
+                      "sym_incoming_batch.batch_id = sym_incoming_error.batch_id and sym_incoming_batch.status='OK')as ok," +
+                    "(SELECT " +
+                      "COUNT(*)newnr " +
+                    " FROM " +
+                      "public.sym_incoming_batch," +
+                     " public.sym_incoming_error " +
+                    "WHERE " +
+                      "sym_incoming_batch.batch_id = sym_incoming_error.batch_id and sym_incoming_batch.status='NE')as new," +
+                    "(SELECT " +
+                     " COUNT(*) ldnr " +
+                    "FROM " +
+                     " public.sym_incoming_batch, " +
+                      "public.sym_incoming_error " +
+                    "WHERE " +
+                      "sym_incoming_batch.batch_id = sym_incoming_error.batch_id and sym_incoming_batch.status='LD')as ld," +
+                    "(SELECT " +
+                     " COUNT(*) insertnr " +
+                    "FROM " +
+                      "public.sym_incoming_batch," +
+                     " public.sym_incoming_error " +
+                    "WHERE " +
+                      "sym_incoming_batch.batch_id = sym_incoming_error.batch_id and sym_incoming_error.event_type='I' ) as insert," +
+
+                    "(SELECT " +
+                      "COUNT(*)uptnr " +
+                    "FROM " +
+                      "public.sym_incoming_batch, " +
+                      "public.sym_incoming_error " +
+                    "WHERE " +
+                      "sym_incoming_batch.batch_id = sym_incoming_error.batch_id and sym_incoming_error.event_type='U' ) as update," +
+                    "(SELECT " +
+                      "COUNT(*) deletenr " +
+                    "FROM " +
+                     " public.sym_incoming_batch," +
+                     " public.sym_incoming_error " +
+                    "WHERE " +
+                      "sym_incoming_batch.batch_id = sym_incoming_error.batch_id and sym_incoming_error.event_type='D' ) as delete," +
+                     " (SELECT " +
+                     " COUNT(*) reloadnr " +
+                    "FROM " +
+                     " public.sym_incoming_batch," +
+                      "public.sym_incoming_error " +
+                    "WHERE " +
+                    "  sym_incoming_batch.batch_id = sym_incoming_error.batch_id and sym_incoming_error.event_type='R' ) as reload" +
+                     " Union all" +
+                     " SELECT" +
+                    " (SELECT " +
+                       "COUNT(*) ernr " +
+                    "FROM " +
+                     " public.sym_data, " +
+                     " public.sym_data_event, " +
+                    "  public.sym_outgoing_batch " +
+                    "WHERE " +
+                     " sym_data.data_id = sym_data_event.data_id AND " +
+                      "sym_data_event.batch_id = sym_outgoing_batch.batch_id  AND  sym_outgoing_batch.status='ER')as er," +
+                    " (SELECT" +
+                       " COUNT(*) oknr " +
+                        " FROM  " +
+                      "public.sym_data," +
+                      "public.sym_data_event," +
+                      "public.sym_outgoing_batch" +
+                    " WHERE " +
+                     " sym_data.data_id = sym_data_event.data_id AND " +
+                     " sym_data_event.batch_id = sym_outgoing_batch.batch_id  AND  sym_outgoing_batch.status='OK')as ok," +
+                    " (SELECT " +
+                       "COUNT(*) newnr " +
+                    "FROM " +
+                     " public.sym_data," +
+                      "public.sym_data_event," +
+                     " public.sym_outgoing_batch" +
+                    " WHERE " +
+                     " sym_data.data_id = sym_data_event.data_id AND " +
+                     " sym_data_event.batch_id = sym_outgoing_batch.batch_id  AND  sym_outgoing_batch.status='NE')as new," +
+                    "(SELECT " +
+                       "COUNT(*) ldnr " +
+                    "FROM " +
+                    "  public.sym_data, " +
+                      "public.sym_data_event," +
+                     " public.sym_outgoing_batch " +
+                    "WHERE " +
+                      "sym_data.data_id = sym_data_event.data_id AND " +
+                     " sym_data_event.batch_id = sym_outgoing_batch.batch_id  AND  sym_outgoing_batch.status='LD')as ld," +
+                    "(SELECT " +
+                       "COUNT(*) insertnr " +
+                    "FROM " +
+                     " public.sym_data," +
+                     " public.sym_data_event," +
+                     " public.sym_outgoing_batch" +
+                     " WHERE " +
+                     " sym_data.data_id = sym_data_event.data_id AND " +
+                     " sym_data_event.batch_id = sym_outgoing_batch.batch_id  AND  sym_data.event_type='I')as insert," +
+                    "(SELECT " +
+                     "  COUNT(*) upnr " +
+                    "FROM " +
+                     " public.sym_data, " +
+                     " public.sym_data_event, " +
+                      "public.sym_outgoing_batch " +
+                    "WHERE " +
+                    "  sym_data.data_id = sym_data_event.data_id AND " +
+                     " sym_data_event.batch_id = sym_outgoing_batch.batch_id  AND  sym_data.event_type='U')as update," +
+                    "(SELECT " +
+                      " COUNT(*) deletenr " +
+                    "FROM " +
+                      "public.sym_data," +
+                     " public.sym_data_event, " +
+                     " public.sym_outgoing_batch " +
+                    "WHERE " +
+                      "sym_data.data_id = sym_data_event.data_id AND " +
+                     " sym_data_event.batch_id = sym_outgoing_batch.batch_id  AND  sym_data.event_type='D')as delete," +
+                    "(SELECT " +
+                      " COUNT(*) reloadnr " +
+                    "FROM " +
+                      "public.sym_data," +
+                      "public.sym_data_event," +
+                      "public.sym_outgoing_batch " +
+                    "WHERE " +
+                     " sym_data.data_id = sym_data_event.data_id AND " +
+                     " sym_data_event.batch_id = sym_outgoing_batch.batch_id  AND  sym_data.event_type='R')as reload;";
+
+                NpgsqlDataAdapter da = new NpgsqlDataAdapter(sql, con);
+
+
+                ds.Reset();
+                if (da != null)
+                {
+                    da.Fill(ds);
+                    dt = ds.Tables[0];
+                }
+                con.Close();
+            }catch(Exception ex)
+            {
+
             }
-            con.Close();
             return dt;
         }
 
@@ -552,22 +575,22 @@ namespace SymetricMonitor
         {
             Response.Redirect("logs.aspx?type=OK,out," + Switch.SelectedValue);
         }
-
+        //proces Insert
         protected void lnkb_insert_in_Click(object sender, EventArgs e)
         {
             Response.Redirect("logs.aspx?type=I,in," + Switch.SelectedValue);
         }
-
+        //proces Update
         protected void lnkb_update_in_Click(object sender, EventArgs e)
         {
             Response.Redirect("logs.aspx?type=U,in," + Switch.SelectedValue);
         }
-
+        //proces Delete
         protected void lnkb_delete_in_Click(object sender, EventArgs e)
         {
             Response.Redirect("logs.aspx?type=D,in," + Switch.SelectedValue);
         }
-
+        //proces Reload
         protected void lnkb_reload_in_Click(object sender, EventArgs e)
         {
             Response.Redirect("logs.aspx?type=R,in," + Switch.SelectedValue);
